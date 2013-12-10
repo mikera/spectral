@@ -20,4 +20,37 @@
 		<developerConnection>scm:git:git@github.com:mikera/${project.artifactId}.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
+	<dependencies>
+		<dependency>
+			<groupId>overtone</groupId>
+			<artifactId>overtone</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.clojure</groupId>
+			<artifactId>clojure</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.mikera</groupId>
+			<artifactId>vectorz-clj</artifactId>
+			<version>0.17.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.mikera</groupId>
+			<artifactId>vectorz</artifactId>
+			<version>0.24.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.mikera</groupId>
+			<artifactId>core.matrix</artifactId>
+			<version>0.16.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.mikera</groupId>
+			<artifactId>cljunit</artifactId>
+			<version>0.3.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
