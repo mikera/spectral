@@ -1,5 +1,6 @@
-(ns mikera.spectral.core
-  (:use [overtone core]))
+(ns mikera.spectral.inst
+  (:use [overtone core])
+  (:require [mikera.vectorz.matrix-api]))
 
 
 ;; ==================================================
