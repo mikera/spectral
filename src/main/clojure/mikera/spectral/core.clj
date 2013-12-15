@@ -1,6 +1,10 @@
 (ns mikera.spectral.core
   (:use [overtone core])
-  (:require [clojure.core.matrix :as mat]))
+  (:require [clojure.core.matrix :as mat])
+  (:require [mikera.image.core :as img])
+  (:require [mikera.image.colours :as col])
+  (:import [mikera.matrixx Matrix AMatrix])
+  (:import [java.awt.image BufferedImage]))
 
 (defonce boot (boot-external-server))
 
@@ -9,6 +13,8 @@
 (defonce buf (buffer 44100)) ;; create a buffer to store the audio 
 
 (def snare (sample (freesound-path 26903))) 
+
+(def snare-buf (load-sample (freesound-path 26903))) 
 
   ;; ============================================
   ;; buffer fun
@@ -24,4 +30,44 @@
   (Thread/sleep 1000)
   (stop))
 
-(take 10 (buffer-read buf))
+(def arr (into-array Double/TYPE (buffer-read snare-buf)))
+
+(defn mag 
+  (^double [^double a ^double b]
+    (Math/sqrt (+ (* a a) (* b b)))))
+
+(defn fft-matrix [^doubles arr]
+  (let [n (count arr)
+        length 1024
+        half-length (quot length 2)
+        fft (mikera.matrixx.algo.FFT. (int length))
+        tarr (double-array (* 2 length))
+        stride 50
+        ts (quot (- n length) stride)
+        result-array (double-array (* half-length ts))]
+    (dotimes [i ts]
+      (System/arraycopy arr (* i stride) tarr 0 length)
+      (.realForward fft tarr)
+      (dotimes [j half-length]
+        (aset result-array (+ i (* j ts)) 
+              (mag (aget tarr (* j 2)) (aget tarr (inc (* j 2)))))))
+    (Matrix/wrap half-length ts result-array)))
+
+(defn colour ^long [^double v]
+  (let [v (* (+ 1.0 (Math/log v)) 0.25)] (col/rgb v 0.0 v)))
+
+(defn render 
+  "Renders a spectrogram matrix into a bufferedimage"
+  ([M]
+    (render M (img/new-image (mat/column-count M) (mat/row-count M) )))
+  ([^AMatrix M ^BufferedImage bi]
+    (let [w (.getWidth bi)
+          h (.getHeight bi)]
+      (dotimes [x w]
+        (dotimes [y h]
+          (.setRGB bi (int x) (- (dec h) (int y)) (unchecked-int (colour (.get M (int y) (int x)) ))))))
+    bi))
+
+(def M (fft-matrix arr))
+
+(img/show (render M))
