@@ -53,8 +53,15 @@
               (mag (aget tarr (* j 2)) (aget tarr (inc (* j 2)))))))
     (Matrix/wrap half-length ts result-array)))
 
-(defn colour ^long [^double v]
-  (let [v (* (+ 1.0 (Math/log v)) 0.25)] (col/rgb v 0.0 v)))
+(defn colour ^long [^double val]
+  (let [lval (* (inc (Math/log val)) 0.9)]
+    (cond 
+    (<= lval 0.0) 0xFF000000
+    (<= lval 1.0) (let [v (- lval 0.0)] (col/rgb 0.0 0.0 v))
+    (<= lval 2.0) (let [v (- lval 1.0)] (col/rgb v 0.0 (- 1.0 v)))
+    (<= lval 3.0) (let [v (- lval 2.0)] (col/rgb 1.0 v 0.0))
+    (<= lval 4.0) (let [v (- lval 3.0)] (col/rgb 1.0 1.0 v))
+    :else 0xFFFFFFFFF)))
 
 (defn render 
   "Renders a spectrogram matrix into a bufferedimage"
