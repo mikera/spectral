@@ -14,9 +14,9 @@
 (defonce buf (buffer 44100)) ;; create a buffer to store the audio 
 
 (def snare (sample (freesound-path 26903)))
-(def snare (sample (freesound-path 68447))) 
+(def piano-scale (sample (freesound-path 94812))) 
 
-(def samp-buf (load-sample (freesound-path 68447))) 
+(def samp-buf (load-sample (freesound-path 49477))) 
 
   ;; ============================================
   ;; buffer fun
@@ -25,12 +25,6 @@
       (record-buf (in bus) buf)) 
 
 (defsynth barf [out-bus 20] (out out-bus (sin-osc 400)))
-
-(do
-  (bus->buf 20 buf)
-  (barf)
-  (Thread/sleep 1000)
-  (stop))
 
 (def arr (into-array Double/TYPE (buffer-read samp-buf)))
 
@@ -45,7 +39,7 @@
         height (min 400 (quot half-length 2))
         fft (mikera.matrixx.algo.FFT. (int length))
         tarr (double-array (* 2 length))
-        stride 100
+        stride 1000
         ts (quot (- n length) stride)
         result-array (double-array (* height ts))]
     (dotimes [i ts]
@@ -75,7 +69,7 @@
           h (.getHeight bi)]
       (dotimes [x w]
         (dotimes [y h]
-          (.setRGB bi (int x) (- (dec h) (int y)) (unchecked-int (spec/heatmap (* 0.01 (.get M (int y) (int x))) ))))))
+          (.setRGB bi (int x) (- (dec h) (int y)) (unchecked-int (spec/heatmap (* 0.005 (.get M (int y) (int x))) ))))))
     bi))
 
 (def M (fft-matrix arr))
