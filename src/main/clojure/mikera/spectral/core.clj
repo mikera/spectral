@@ -3,6 +3,7 @@
   (:require [clojure.core.matrix :as mat])
   (:require [mikera.image.core :as img])
   (:require [mikera.image.colours :as col])
+  (:require [mikera.image.spectrum :as spec])
   (:import [mikera.matrixx Matrix AMatrix])
   (:import [java.awt.image BufferedImage]))
 
@@ -12,9 +13,10 @@
 
 (defonce buf (buffer 44100)) ;; create a buffer to store the audio 
 
-(def snare (sample (freesound-path 26903))) 
+(def snare (sample (freesound-path 26903)))
+(def snare (sample (freesound-path 68447))) 
 
-(def snare-buf (load-sample (freesound-path 26903))) 
+(def samp-buf (load-sample (freesound-path 68447))) 
 
   ;; ============================================
   ;; buffer fun
@@ -30,7 +32,7 @@
   (Thread/sleep 1000)
   (stop))
 
-(def arr (into-array Double/TYPE (buffer-read snare-buf)))
+(def arr (into-array Double/TYPE (buffer-read samp-buf)))
 
 (defn mag 
   (^double [^double a ^double b]
@@ -38,20 +40,21 @@
 
 (defn fft-matrix [^doubles arr]
   (let [n (count arr)
-        length 1024
+        length 8192   ;; length of FFT window
         half-length (quot length 2)
+        height (min 400 (quot half-length 2))
         fft (mikera.matrixx.algo.FFT. (int length))
         tarr (double-array (* 2 length))
-        stride 50
+        stride 100
         ts (quot (- n length) stride)
-        result-array (double-array (* half-length ts))]
+        result-array (double-array (* height ts))]
     (dotimes [i ts]
       (System/arraycopy arr (* i stride) tarr 0 length)
       (.realForward fft tarr)
-      (dotimes [j half-length]
+      (dotimes [j height]
         (aset result-array (+ i (* j ts)) 
               (mag (aget tarr (* j 2)) (aget tarr (inc (* j 2)))))))
-    (Matrix/wrap half-length ts result-array)))
+    (Matrix/wrap height ts result-array)))
 
 (defn colour ^long [^double val]
   (let [lval (* (inc (Math/log val)) 0.9)]
@@ -72,9 +75,11 @@
           h (.getHeight bi)]
       (dotimes [x w]
         (dotimes [y h]
-          (.setRGB bi (int x) (- (dec h) (int y)) (unchecked-int (colour (.get M (int y) (int x)) ))))))
+          (.setRGB bi (int x) (- (dec h) (int y)) (unchecked-int (spec/heatmap (* 0.01 (.get M (int y) (int x))) ))))))
     bi))
 
 (def M (fft-matrix arr))
 
-(img/show (render M))
+(defn demo-code []
+  
+  (img/show (render M)))
