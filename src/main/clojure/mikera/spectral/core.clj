@@ -76,4 +76,6 @@
 
 (defn demo-code []
   
-  (img/show (render M)))
+  (img/show (render (fft-matrix arr)))
+  
+  )
