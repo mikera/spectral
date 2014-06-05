@@ -11,24 +11,24 @@
 
 (require '[mikera.spectral.inst :as inst])
 
-(defonce buf (buffer 44100)) ;; create a buffer to store the audio 
+(defonce buf (buffer 44100)) ;; create a buffer to store the audio
 
 (def snare (sample (freesound-path 26903)))
-(def piano-scale (sample (freesound-path 94812))) 
+(def piano-scale (sample (freesound-path 94812)))
 
-(def samp-buf (load-sample (freesound-path 49477))) 
+(def samp-buf (load-sample (freesound-path 49477)))
 
   ;; ============================================
   ;; buffer fun
-  
-(defsynth bus->buf [bus 20 buf 0] 
-      (record-buf (in bus) buf)) 
+
+(defsynth bus->buf [bus 20 buf 0]
+      (record-buf (in bus) buf))
 
 (defsynth barf [out-bus 20] (out out-bus (sin-osc 400)))
 
 (def arr (into-array Double/TYPE (buffer-read samp-buf)))
 
-(defn mag 
+(defn mag
   (^double [^double a ^double b]
     (Math/sqrt (+ (* a a) (* b b)))))
 
@@ -46,13 +46,13 @@
       (System/arraycopy arr (* i stride) tarr 0 length)
       (.realForward fft tarr)
       (dotimes [j height]
-        (aset result-array (+ i (* j ts)) 
+        (aset result-array (+ i (* j ts))
               (mag (aget tarr (* j 2)) (aget tarr (inc (* j 2)))))))
     (Matrix/wrap height ts result-array)))
 
 (defn colour ^long [^double val]
   (let [lval (* (inc (Math/log val)) 0.9)]
-    (cond 
+    (cond
     (<= lval 0.0) 0xFF000000
     (<= lval 1.0) (let [v (- lval 0.0)] (col/rgb 0.0 0.0 v))
     (<= lval 2.0) (let [v (- lval 1.0)] (col/rgb v 0.0 (- 1.0 v)))
@@ -60,7 +60,7 @@
     (<= lval 4.0) (let [v (- lval 3.0)] (col/rgb 1.0 1.0 v))
     :else 0xFFFFFFFFF)))
 
-(defn render 
+(defn render
   "Renders a spectrogram matrix into a bufferedimage"
   ([M]
     (render M (img/new-image (mat/column-count M) (mat/row-count M) )))
