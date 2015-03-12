@@ -7,6 +7,9 @@
   (:import [mikera.matrixx Matrix AMatrix])
   (:import [java.awt.image BufferedImage]))
 
+;; TODO
+;; This namespace contains exanmple code using overtone. Should really separate out overtone into demo code
+
 (defonce boot (boot-external-server))
 
 (require '[mikera.spectral.inst :as inst])
