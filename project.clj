@@ -3,11 +3,8 @@
   :source-paths ["src/main/clojure"]
   :test-paths ["src/test/clojure"]
 
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [overtone "0.9.1"]
-                 [net.mikera/vectorz-clj "0.17.0"]
-                 [net.mikera/vectorz "0.25.0"]
-                 [net.mikera/core.matrix "0.16.0"]
-                 [net.mikera/cljunit "0.3.0"]
-                 [net.mikera/imagez "0.3.1"]]
+                 [net.mikera/vectorz-clj "0.29.0"]
+                 [net.mikera/imagez "0.5.0"]]
   :jvm-opts ["-Xmx2048m"])
