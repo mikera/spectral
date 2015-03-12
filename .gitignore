@@ -4,3 +4,5 @@ target/
 /.classpath
 /bin/
 /.lein-failures
+/.lein-repl-history
+/.nrepl-port
